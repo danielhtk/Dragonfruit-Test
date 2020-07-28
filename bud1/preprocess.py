@@ -49,7 +49,7 @@ def ImgPreprocess_1(path="images/generated"):
                 thresh1 = cv2.bilateralFilter(gray, 8,50,50)
                 thresh1 = cv2.adaptiveThreshold(thresh1, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 7, 7)
                 #thresh1 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-                cv2.imwrite(os.path.join(base_dir, "result_pics/") + os.path.splitext(os.path.basename(in_filename))[0] + ".png", thresh1)
+                cv2.imwrite(os.path.join(base_dir, "generated/") + os.path.splitext(os.path.basename(in_filename))[0] + ".png", thresh1)
 
 if __name__ == '__main__':
     ImgPreprocess()

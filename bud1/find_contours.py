@@ -102,7 +102,7 @@ def BananaContours():
         # blurred = cv2.GaussianBlur(img, (5, 5), 0)
         # value, thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY_INV)
 
-        _, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
         metadata = contours_metadata(contours)
         minimum =metadata['area_min']
@@ -143,7 +143,7 @@ def BananaContours():
         ## 畫圖
         # if len(cnt_with_area)!=0.0:
         avg_area = total_area / len(cnt_with_area)
-        print(avg_area)
+        #print(avg_area)
         banana_volume = sqrt(avg_area)**3
         avg_volume = total_volume / len(cnt_with_area)
         # banana_volume_list.append(banana_volume)
@@ -155,23 +155,27 @@ def BananaContours():
     # x = list(range(1, len(banana_volume_list)+1))
 
     x = [ i.toordinal() for i in datetime_objects ]
+    #print(x)
     y_dots = banana_volume_list
+    #print(y_dots)
 
     def myfunc(x):
         return slope * x + intercept
 
+    #回歸曲線
     slope, intercept, r, p, std_err = stats.linregress(x, y_dots)
     y_regression = list(map(myfunc, x))
 
+    #plot axis的物件
     ax = plt.gca()
-    formatter = mdates.DateFormatter("%b")
-    ax.xaxis.set_major_formatter(formatter)
+    formatter = mdates.DateFormatter("%b")  #時間軸（月份）
+    ax.xaxis.set_major_formatter(formatter)  #大的
 
     locator = mdates.MonthLocator()
     ax.xaxis.set_major_locator(locator)
 
-    formatter = mdates.DateFormatter("%d")
-    ax.xaxis.set_minor_formatter(formatter)
+    formatter = mdates.DateFormatter("%d")  #時間軸（天）
+    ax.xaxis.set_minor_formatter(formatter)  #小的
 
     locator = mdates.DayLocator()
     ax.xaxis.set_minor_locator(locator)
@@ -181,9 +185,10 @@ def BananaContours():
 
     # ax.set_xlim([datetime(2020, 6, 10), datetime(2020, 7, 1)])
     ax.set_xlim([left_range, right_range])
+    #ax.set_ylim([0,10])
 
-    ax.scatter(x, y_dots)
+    ax.scatter(x, y_dots,color='k')
     ax.plot(x, y_regression)
     plt.savefig("scatter.png")
-
+    #ax.set_facecolor('m')
     plt.show()
