@@ -11,7 +11,7 @@ from scipy import stats
 
 def canny_edge(in_filename):
     img = cv2.imread(in_filename,0)
-    gray_filtered = cv2.bilateralFilter(img, 10, 275, 1)
+    gray_filtered = cv2.bilateralFilter(img, 10, 275, 2)
 
     # Using the Canny filter to get contours
     edges = cv2.Canny(gray_filtered, 20, 30)

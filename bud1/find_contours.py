@@ -11,7 +11,7 @@ from scipy import stats
 
 def canny_edge(in_filename):
     img = cv2.imread(in_filename,0)
-    gray_filtered = cv2.bilateralFilter(img, 10, 50, 50)
+    gray_filtered = cv2.bilateralFilter(img, 10, 275, 2)
 
     # Using the Canny filter to get contours
     edges = cv2.Canny(gray_filtered, 20, 30)
@@ -102,7 +102,7 @@ def BananaContours():
         # blurred = cv2.GaussianBlur(img, (5, 5), 0)
         # value, thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY_INV)
 
-        contours, hierarchy = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+        _, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
         metadata = contours_metadata(contours)
         minimum =metadata['area_min']
