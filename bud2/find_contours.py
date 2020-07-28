@@ -102,7 +102,7 @@ def BananaContours():
         # blurred = cv2.GaussianBlur(img, (5, 5), 0)
         # value, thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY_INV)
 
-        contours, hierarchy = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+        _, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
         metadata = contours_metadata(contours)
         minimum =metadata['area_min']
