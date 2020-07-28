@@ -84,8 +84,8 @@ def getEdge(args):
 
 def main(args):
     # ImgPreprocess()
-    #getEdge(args)
-    BananaContours()
+    # getEdge(args)
+     BananaContours()
 
 
 if __name__ == '__main__':
