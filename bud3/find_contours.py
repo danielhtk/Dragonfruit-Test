@@ -70,6 +70,33 @@ def contours_metadata(contours):
     return contours_data
 
 
+def myfunc(x):
+    return slope * x + intercept
+
+#x, y: data to fit
+#pyplot_formatter: pyplot Format Strings
+#fit_type: one of "exp", "poly", "linear"
+# "poly" will use 3rd degree polynomial to draw the fit curve
+
+def draw_fitline(ax, x, y, pyplot_formatter, fit_type):
+    order = 3
+    dot_num = 100
+    xp = np.linspace(x[0], x[-1], dot_num)
+    
+    if fit_type == "exp":
+        pexp = np.poly1d(np.polyfit(x, np.log(y), 1))
+        ax.plot(xp, np.exp(pexp(xp)), '--')
+        
+    elif fit_type == "linear":
+        slope, intercept, r, p, std_err = stats.linregress(x, y)
+        y_regression = [slope * n + intercept for n in x]
+        ax.plot(x, y_regression)
+
+    elif fit_type == "poly":
+        p3 = np.poly1d(np.polyfit(x, y, order))
+        ax.plot(xp, p3(xp), pyplot_formatter)
+        
+
 def BananaContours():
     directory="images/edged_img/"
     datetime_objects=[]
@@ -99,7 +126,7 @@ def BananaContours():
         #ret,thresh = cv2.threshold(img,127,255,0)
         # blurred = cv2.GaussianBlur(img, (5, 5), 0)
         # value, thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY_INV)
-        _, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
         metadata = contours_metadata(contours)
         minimum =metadata['area_min']
         median =metadata['area_median']
@@ -151,14 +178,17 @@ def BananaContours():
 
     x = list(range(1, len(banana_volume_list)+1))
 
-    x = [ i.toordinal() for i in datetime_objects ]
-    y_dots = banana_volume_list
+    x = np.array([ i.toordinal() for i in datetime_objects ])
+    y_dots = np.array(banana_volume_list)
 
-    def myfunc(x):
-        return slope * x + intercept
+    ###filter array
+    #if you don't want data be filtered
+    #you can always comment these lines
+    filter_array = y_dots > 1000
 
-    slope, intercept, r, p, std_err = stats.linregress(x, y_dots)
-    y_regression = list(map(myfunc, x))
+    x = x[filter_array]
+    y_dots = y_dots[filter_array]
+    ###filter array end
 
     ax = plt.gca()
     formatter = mdates.DateFormatter("%b")
@@ -180,7 +210,9 @@ def BananaContours():
     ax.set_xlim([left_range, right_range])
 
     ax.scatter(x, y_dots)
-    ax.plot(x, y_regression)
+    
+    draw_fitline(ax, x, y_dots, '--', 'poly')
+    
     plt.savefig("scatter.png")
 
     plt.show()
