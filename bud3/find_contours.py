@@ -161,7 +161,6 @@ def BananaContours():
         out_filename = 'images/result_pics/res_' + os.path.splitext(os.path.basename(f))[0] + '.png'
         result = cv2.drawContours(cv2.imread(read_filename), cnt_with_area, -1, (0,0,255), 2)
         cv2.imwrite(out_filename, result)
-
         ## 畫圖
         # if len(cnt_with_area)!=0.0:
         # print(total_area)
@@ -177,18 +176,17 @@ def BananaContours():
         banana_volume_list.append(avg_area)
     x = list(range(1, len(banana_volume_list)+1))
     x = np.array([ i.toordinal() for i in datetime_objects ])
-
     y_dots = np.array(banana_volume_list)
-
+    for co in range(len(y_dots)):
+        if y_dots[co] > 10000.0:
+            y_dots = filterData(co , y_dots)
     ###filter array
     #if you don't want data be filtered
     #you can always comment these lines
-    filter_array = y_dots > 1000
-
+    filter_array = y_dots > 0  #y_dots > 0 equals to return np.where(y_dots!=0)
     x = x[filter_array]
-    y_dots = y_dots[filter_array]
+    y_dots = y_dots[filter_array]       #y_dots[np.where(y_dots != 0)]
     ###filter array end
-
     ax = plt.gca()
     formatter = mdates.DateFormatter("%b")
     ax.xaxis.set_major_formatter(formatter)
@@ -209,9 +207,24 @@ def BananaContours():
     ax.set_xlim([left_range, right_range])
 
     ax.scatter(x, y_dots)
-    
+
     draw_fitline(ax, x, y_dots, '-', 'poly')
-    
+
     plt.savefig("scatter.png")
 
     plt.show()
+
+def filterData(x, y_dots): #filter insuitable data and replace with 0
+    temp = 0
+    c = len(y_dots) - x #left how much to go
+    temp = x
+    i = 0;
+    while  i < c:
+        if y_dots[temp] < (y_dots[temp-1] - 9000.0):
+            y_dots[temp] = 0
+            i += 1
+            temp += 1
+        else:
+            temp += 1
+            i += 1
+    return y_dots
