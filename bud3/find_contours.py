@@ -126,7 +126,7 @@ def BananaContours():
         #ret,thresh = cv2.threshold(img,127,255,0)
         # blurred = cv2.GaussianBlur(img, (5, 5), 0)
         # value, thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY_INV)
-        contours, hierarchy = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+        _, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
         metadata = contours_metadata(contours)
         minimum =metadata['area_min']
         median =metadata['area_median']
@@ -175,10 +175,9 @@ def BananaContours():
         # banana_volume_list.append(total_volume)
         # banana_volume_list.append(total_area)
         banana_volume_list.append(avg_area)
-
     x = list(range(1, len(banana_volume_list)+1))
-
     x = np.array([ i.toordinal() for i in datetime_objects ])
+
     y_dots = np.array(banana_volume_list)
 
     ###filter array
@@ -211,7 +210,7 @@ def BananaContours():
 
     ax.scatter(x, y_dots)
     
-    draw_fitline(ax, x, y_dots, '--', 'poly')
+    draw_fitline(ax, x, y_dots, '-', 'poly')
     
     plt.savefig("scatter.png")
 
