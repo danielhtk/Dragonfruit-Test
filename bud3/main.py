@@ -5,7 +5,7 @@ import tensorflow as tf
 import utls.dataset_manager as dm
 from test import m_tester
 from preprocess import ImgPreprocess, ImgPreprocess_1
-from find_contours import BananaContours
+from find_contours import BudContours
 
 def config_model():
     parser = argparse.ArgumentParser(description='Basic details to run HED')
@@ -85,7 +85,7 @@ def getEdge(args):
 def main(args):
     # ImgPreprocess()
     # getEdge(args)
-     BananaContours()
+    BudContours()
 
 
 if __name__ == '__main__':

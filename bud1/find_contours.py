@@ -100,7 +100,7 @@ def draw_fitline(ax, x, y, pyplot_formatter, fit_type):
         ax.plot(xp, p3(xp), pyplot_formatter)
 
 
-def BananaContours():
+def BudContours():
     directory = "images/edged_img/"
     datetime_objects = []
     files = []
