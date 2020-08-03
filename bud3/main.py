@@ -84,6 +84,7 @@ def getEdge(args):
 
 def main(args):
     # ImgPreprocess()
+    # ImgPreprocess_1()
     # getEdge(args)
     BudContours()
 
