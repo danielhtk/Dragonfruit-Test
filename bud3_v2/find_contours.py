@@ -12,12 +12,12 @@ from scipy import stats
 
 def canny_edge(in_filename):
     img = cv2.imread(in_filename, 0)
-    gray_filtered = cv2.bilateralFilter(img, 10, 500, 2)
+    gray_filtered = cv2.bilateralFilter(img, 10, 600, 2)
 
     # Using the Canny filter to get contours
     edges = cv2.Canny(gray_filtered, 20, 30)
     # Using the Canny filter with different parameters
-    edges_high_thresh = cv2.Canny(gray_filtered, 0 , 400)
+    edges_high_thresh = cv2.Canny(gray_filtered, 60 , 300)
     # Stacking the images to print them together
     # For comparison
     images = np.hstack((img, edges, edges_high_thresh))
@@ -104,7 +104,7 @@ def BudContours():
     directory = "images/edged_img/"
     datetime_objects = []
     files = []
-    banana_volume_list = []
+    buds_area_list = []
     for filename in os.listdir(directory):
         if filename.endswith(".jpg") or filename.endswith(".png"):
             # files.append(os.path.join(directory,filename))
@@ -160,7 +160,7 @@ def BudContours():
         read_filename = directory + \
                         os.path.splitext(os.path.basename(f))[0] + \
                         '.png'
-        print(read_filename)
+        # print(read_filename)
         out_filename = 'images/result_pics/res_' + os.path.splitext(os.path.basename(f))[0] + '.png'
         result = cv2.drawContours(cv2.imread(read_filename), cnt_with_area, -1, (0, 0, 255), 2)
         cv2.imwrite(out_filename, result)
@@ -170,16 +170,16 @@ def BudContours():
         # print(cnt_with_area)
         avg_area = total_area / len(cnt_with_area)
 
-        banana_volume = sqrt(avg_area) ** 3
-        avg_volume = total_volume / len(cnt_with_area)
+        # banana_volume = sqrt(avg_area) ** 3
+        # avg_volume = total_volume / len(cnt_with_area)
         # banana_volume_list.append(banana_volume)
         # banana_volume_list.append(avg_volume)
         # banana_volume_list.append(total_volume)
         # banana_volume_list.append(total_area)
-        banana_volume_list.append(avg_area)
-    x = list(range(1, len(banana_volume_list) + 1))
+        buds_area_list.append(avg_area)
+    # x = list(range(1, len(banana_volume_list) + 1))
     x = np.array([i.toordinal() for i in datetime_objects])
-    y_dots = np.array(banana_volume_list)
+    y_dots = np.array(buds_area_list)
 
     ###filter array
     # if you don't want data be filtered
@@ -189,8 +189,17 @@ def BudContours():
             y_dots = filterData(co, y_dots)
     filter_array = y_dots > 0  # y_dots > 0 equals to return np.where(y_dots!=0)
     x = x[filter_array]
+    # print(x)
     y_dots = y_dots[filter_array]  # y_dots[np.where(y_dots != 0)]
     ###filter array end
+
+    ###array day average
+    x_date = []
+    y_dots_new = []
+    for d in set(x):
+        x_date.append(d)        ##put the same date into one element
+        y_dots_new.append(np.mean([y_dots[i] for i in range(len(x)) if x[i] == d]))  ##calc mean of one day
+    ###array end
 
     ax = plt.gca()
     formatter = mdates.DateFormatter("%b")
@@ -211,9 +220,9 @@ def BudContours():
     # ax.set_xlim([datetime(2020, 6, 10), datetime(2020, 7, 1)])
     ax.set_xlim([left_range, right_range])
 
-    ax.scatter(x, y_dots)
+    ax.scatter(x_date, y_dots_new)
 
-    draw_fitline(ax, x, y_dots, '-', 'poly')
+    draw_fitline(ax, x_date, y_dots_new, '-', 'poly')
 
     plt.savefig("scatter.png")
 
