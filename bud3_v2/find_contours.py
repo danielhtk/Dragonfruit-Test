@@ -3,6 +3,7 @@ import cv2
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
+from pathlib import Path
 from math import sqrt
 from datetime import datetime
 from datetime import timedelta
@@ -21,12 +22,46 @@ def canny_edge(in_filename):
     # For comparison
     images = np.hstack((img, edges, edges_high_thresh))
     # Output the resulting
-
     cv2.imwrite('images/canny_img/canny_'+ \
                  os.path.splitext(os.path.basename(in_filename))[0] + \
                  '.png',images)
     return edges_high_thresh
 
+def rect():
+    path = "images/rect_pic"
+    Path(path).mkdir(parents=True, exist_ok=True)
+    res_dir = "images/result_pics/"
+    images = []
+    fn = []
+    for filename in os.listdir(res_dir):
+        img = cv2.imread(os.path.join(res_dir, filename))
+        if img is not None:
+            images.append(img)
+            fn.append(filename)
+    for i in range(len(images)) :
+        # temp = images[i].astype(np.uint8)
+        temp = cv2.cvtColor(images[i], cv2.COLOR_BGR2GRAY);
+        ret, thresh = cv2.threshold(temp, 127, 255, 0)
+        _, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        for c in contours:
+            # get the bounding rect
+            x, y, w, h = cv2.boundingRect(c)
+            # draw a green rectangle to visualize the bounding rect
+            cv2.rectangle(images[i], (x, y), (x + w, y + h), (0, 255, 0), 2)
+            ## get the min area rect
+            rect = cv2.minAreaRect(c)
+            box = cv2.boxPoints(rect)
+            ## convert all coordinates floating point values to in
+            box = np.int0(box)
+            # rect_pic = cv2.drawContours(temp, [box], 0, (0, 0, 255))
+            temp = cv2.drawContours(temp, [box], -1, (0, 255, 0), 2)
+        # cv2.imwrite('images/rect_pic/rect_' + \
+        #             os.path.splitext(os.path.basename( np.array(fn)[i]) )[0] + \
+        #             '.png', rect_pic)
+        rect = cv2.drawContours(temp, contours, -1, (0, 255, 0), 2)
+        cv2.imwrite('images/rect_pic/rect_' + \
+                    os.path.splitext(os.path.basename( np.array(fn)[i]) )[0] + \
+                    '.png', rect)
 def contours_metadata(contours):
     ##將contours的metadata存入contours_data
     contours_data={}
@@ -174,6 +209,7 @@ def BudContours():
         # banana_volume_list.append(total_volume)
         # banana_volume_list.append(total_area)
         buds_volume_list.append(avg_area)
+    rect()
     x = list(range(1, len(buds_volume_list)+1))
     x = np.array([ i.toordinal() for i in datetime_objects ])
     y_dots = np.array(buds_volume_list)
@@ -213,7 +249,7 @@ def BudContours():
 
     plt.savefig("scatter.png")
 
-    plt.show()
+    # plt.show()
 
 def filterData(x, y_dots): #filter insuitable data and replace with 0
     temp = 0
