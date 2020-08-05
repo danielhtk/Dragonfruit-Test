@@ -9,7 +9,6 @@ from datetime import timedelta
 import matplotlib.dates as mdates
 from scipy import stats
 
-
 def canny_edge(in_filename):
     img = cv2.imread(in_filename, 0)
     gray_filtered = cv2.bilateralFilter(img, 10, 600, 2)
@@ -29,52 +28,50 @@ def canny_edge(in_filename):
     return edges_high_thresh
 
 
-def contours_metadata(contours):
-    ##將contours的metadata存入contours_data
-    contours_data = {}
-    cnts_perimeter = []
-    cnts_area = []
-    cnts_index = []
-
-    ## 計算資料分布改框的條件，因為小於200的資料太多，故刪除
-    for c in contours:
-        if cv2.contourArea(c) > 200.0 and \
-                cv2.arcLength(c, False) < 600:
-            cnts_index.append(c)
-            cnts_perimeter.append(cv2.arcLength(c, False))
-            cnts_area.append(cv2.contourArea(c))
-    contours_data['index'] = cnts_index
-    contours_data['perimeter'] = cnts_perimeter
-    contours_data['area'] = cnts_area
-    # show_statistic(contours_data['area'],25.0)
-
-    # plt.hist(contours_data['area'], color = 'blue', edgecolor = 'black'
-    #          ,bins = int((max(contours_data['area'])-min(contours_data['area']))/25.0))
-    contours_data['area_avg'] = np.average(contours_data['area'])
-    contours_data['area_variance'] = np.var(contours_data['area'])
-    contours_data['area_std'] = np.std(contours_data['area'])
-    bp_dict = plt.boxplot(contours_data['area'])
-
-    contours_data['area_Q1'] = [item.get_ydata()[1] for item in bp_dict['boxes']][0]
-    contours_data['area_Q3'] = [item.get_ydata()[3] for item in bp_dict['boxes']][0]
-    contours_data['area_median'] = [item.get_ydata()[1] for item in bp_dict['medians']][0]
-    contours_data['area_min'] = [item.get_ydata()[1] for item in bp_dict['whiskers']][0]
-    contours_data['area_max'] = [item.get_ydata()[1] for item in bp_dict['whiskers']][1]
-
-    plt.clf()
-    plt.close()
-    # print("25%: ",contours_data['area_Q1'])
-    # print("75%: ",contours_data['area_Q3'])
-    # print("median: ",contours_data['area_median'])
-    # print("min",contours_data['area_min'])
-    # print("max",contours_data['area_max'])
-
-    return contours_data
-
+# def contours_metadata(contours):
+#     ##將contours的metadata存入contours_data
+#     contours_data = {}
+#     cnts_perimeter = []
+#     cnts_area = []
+#     cnts_index = []
+#
+#     ## 計算資料分布改框的條件，因為小於200的資料太多，故刪除
+#     for c in contours:
+#         if cv2.contourArea(c) > 200.0 and \
+#                 cv2.arcLength(c, False) < 600:
+#             cnts_index.append(c)
+#             cnts_perimeter.append(cv2.arcLength(c, False))
+#             cnts_area.append(cv2.contourArea(c))
+#     contours_data['index'] = cnts_index
+#     contours_data['perimeter'] = cnts_perimeter
+#     contours_data['area'] = cnts_area
+#     # show_statistic(contours_data['area'],25.0)
+#
+#     # plt.hist(contours_data['area'], color = 'blue', edgecolor = 'black'
+#     #          ,bins = int((max(contours_data['area'])-min(contours_data['area']))/25.0))
+#     contours_data['area_avg'] = np.average(contours_data['area'])
+#     contours_data['area_variance'] = np.var(contours_data['area'])
+#     contours_data['area_std'] = np.std(contours_data['area'])
+#     bp_dict = plt.boxplot(contours_data['area'])
+#
+#     contours_data['area_Q1'] = [item.get_ydata()[1] for item in bp_dict['boxes']][0]
+#     contours_data['area_Q3'] = [item.get_ydata()[3] for item in bp_dict['boxes']][0]
+#     contours_data['area_median'] = [item.get_ydata()[1] for item in bp_dict['medians']][0]
+#     contours_data['area_min'] = [item.get_ydata()[1] for item in bp_dict['whiskers']][0]
+#     contours_data['area_max'] = [item.get_ydata()[1] for item in bp_dict['whiskers']][1]
+#
+#     plt.clf()
+#     plt.close()
+#     # print("25%: ",contours_data['area_Q1'])
+#     # print("75%: ",contours_data['area_Q3'])
+#     # print("median: ",contours_data['area_median'])
+#     # print("min",contours_data['area_min'])
+#     # print("max",contours_data['area_max'])
+#
+#     return contours_data
 
 def myfunc(x):
     return slope * x + intercept
-
 
 # x, y: data to fit
 # pyplot_formatter: pyplot Format Strings
@@ -98,7 +95,6 @@ def draw_fitline(ax, x, y, pyplot_formatter, fit_type):
     elif fit_type == "poly":
         p3 = np.poly1d(np.polyfit(x, y, order))
         ax.plot(xp, p3(xp), pyplot_formatter)
-
 
 def BudContours():
     directory = "images/edged_img/"
@@ -130,16 +126,16 @@ def BudContours():
         # blurred = cv2.GaussianBlur(img, (5, 5), 0)
         # value, thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY_INV)
         _, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        metadata = contours_metadata(contours)
-        minimum = metadata['area_min']
-        median = metadata['area_median']
-        maximum = metadata['area_max']
-        area_avg = metadata['area_avg']
-        area_std = metadata['area_std']
-        q1 = metadata['area_Q1']
+        # metadata = contours_metadata(contours)
+        # minimum = metadata['area_min']
+        # median = metadata['area_median']
+        # maximum = metadata['area_max']
+        # area_avg = metadata['area_avg']
+        # area_std = metadata['area_std']
+        # q1 = metadata['area_Q1']
         cnt_with_area = []
         total_area = 0.0
-        total_volume = 0.0
+        # total_volume = 0.0
         # /** 針對average、standard deviation去篩選contours */
         for c in contours:
             # if cv2.contourArea(c)>(minimum)and \
@@ -147,7 +143,7 @@ def BudContours():
             cnt_with_area.append(c)
             a = cv2.contourArea(c)
             total_area += a
-            total_volume += sqrt(a) ** 3
+            # total_volume += sqrt(a) ** 3
         # print(len(cnt_with_area))
 
         # /** 使用Q1、medina、Q3來篩選contours
@@ -156,7 +152,6 @@ def BudContours():
         #         cv2.contourArea(c)< maximum :
         #         cnt_with_area.append(c)
         #         total_area += cv2.contourArea(c)
-
         read_filename = directory + \
                         os.path.splitext(os.path.basename(f))[0] + \
                         '.png'
@@ -169,7 +164,6 @@ def BudContours():
         # print(total_area)
         # print(cnt_with_area)
         avg_area = total_area / len(cnt_with_area)
-
         # banana_volume = sqrt(avg_area) ** 3
         # avg_volume = total_volume / len(cnt_with_area)
         # banana_volume_list.append(banana_volume)
@@ -193,12 +187,14 @@ def BudContours():
     y_dots = y_dots[filter_array]  # y_dots[np.where(y_dots != 0)]
     ###filter array end
 
-    ###array day average
+    ###array of day average
     x_date = []
     y_dots_new = []
     for d in set(x):
-        x_date.append(d)        ##put the same date into one element
-        y_dots_new.append(np.mean([y_dots[i] for i in range(len(x)) if x[i] == d]))  ##calc mean of one day
+        ##put the same date into one element
+        x_date.append(d)
+        ##calc mean of one day
+        y_dots_new.append(np.mean([y_dots[i] for i in range(len(x)) if x[i] == d]))
     ###array end
 
     ax = plt.gca()
@@ -228,7 +224,6 @@ def BudContours():
 
     plt.show()
 
-
 def filterData(x, y_dots):  # filter unsuitable data and replace with 0
     temp = 0
     c = len(y_dots) - x  # left how much to go
@@ -236,7 +231,7 @@ def filterData(x, y_dots):  # filter unsuitable data and replace with 0
     i = 0;
     while i < c:
         # if y_dots[temp-1] != 0 :
-        #     # filter element without continuous 0
+        #     ### filter element with 0
         #     if y_dots[temp] < (y_dots[temp - 1]):
         #         y_dots[temp] = 0
         #         i += 1
@@ -245,9 +240,9 @@ def filterData(x, y_dots):  # filter unsuitable data and replace with 0
         #         temp += 1
         #         i += 1
         # else:
-            ### filter element with continuous 0s
+            ### filter element smaller than mean of elements before
         if y_dots[temp] < (np.mean(y_dots[0:temp-1])):
-            y_dots[temp] = 0  # element = 0 if y_dots[temp] is lower than mean y_dots[0:temp-1]
+            y_dots[temp] = 0  # element = 0 if y_dots[temp] is lower than mean(y_dots[0:temp-1])
             i += 1
             temp += 1
         else:
