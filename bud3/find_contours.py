@@ -84,7 +84,7 @@ def myfunc(x):
 # We use twiny() to draw on another x-axis
 # to avoid the problem here
 def draw_fitline(ax, x, y, pyplot_formatter, fit_type):
-    
+    draw_fitline
     def R2(x, y, coefs):
         p = np.poly1d(coefs)
         yhat = p(x) # or [p(z) for z in x]
@@ -188,7 +188,7 @@ def BudContours():
         edges = canny_edge(f)
         ret,thresh = cv2.threshold(edges,127,255,0)
         # img = cv2.imread(f,0)
-        #ret,thresh = cv2.threshold(img,127,255,0)
+        # ret,thresh = cv2.threshold(img,127,255,0)
         # blurred = cv2.GaussianBlur(img, (5, 5), 0)
         # value, thresh = cv2.threshold(blurred, 60, 255, cv2.THRESH_BINARY_INV)
         _, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
@@ -273,7 +273,7 @@ def BudContours():
 
     ax.scatter(x, y_dots)
 
-    draw_fitline(ax, x, y_dots, '-', 'poly')
+    draw_fitline(ax, x, y_dots, '-', 'exp')
 
     plt.savefig("scatter.png")
 

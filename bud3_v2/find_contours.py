@@ -109,28 +109,94 @@ def rect():
 def myfunc(x):
     return slope * x + intercept
 
+# draw_fitline v0.1.1 updated at 2020/08/06
 # x, y: data to fit
 # pyplot_formatter: pyplot Format Strings
 # fit_type: one of "exp", "poly", "linear"
 # "poly" will use 3rd degree polynomial to draw the fit curve
 
+# The original x value bases on timestamps
+# and the value is too big, regression function will have ugly coefficients to display
+# We use twiny() to draw on another x-axis
+# to avoid the problem here
 def draw_fitline(ax, x, y, pyplot_formatter, fit_type):
+    def R2(x, y, coefs):
+        p = np.poly1d(coefs)
+        yhat = p(x)  # or [p(z) for z in x]
+        ybar = np.sum(y) / len(y)  # or sum(y)/len(y)
+        ssreg = np.sum((yhat - ybar) ** 2)  # or sum([ (yihat - ybar)**2 for yihat in yhat])
+        sstot = np.sum((y - ybar) ** 2)  # or sum([ (yi - ybar)**2 for yi in y])
+        return ssreg / sstot
+
     order = 3
     dot_num = 100
+    x_base = x[0]
+    x = [item - x_base for item in x]
     xp = np.linspace(x[0], x[-1], dot_num)
 
+    main_ax = ax.twiny()
+    original_xlim = ax.get_xlim()
+    main_ax.set_xlim([timestamp - x_base for timestamp in original_xlim])
+
     if fit_type == "exp":
-        pexp = np.poly1d(np.polyfit(x, np.log(y), 1))
-        ax.plot(xp, np.exp(pexp(xp)), '--')
+
+        # Using polyfit to compute exponential regression function
+        # y = b*exp(a*x)
+        exp_coef = np.polyfit(x, np.log(y), 1)
+        pexp = np.poly1d(exp_coef)
+
+        # But be careful, to transform a linear function to a exponential function
+        # we should addjust coefficients.
+        print(exp_coef)
+        a = exp_coef[0]
+        b = np.exp(exp_coef[1])
+
+        print("R2 value: ")
+        print(R2(x, np.log(y), exp_coef))
+        print("for function y = b*exp(a*x), b = {b:e}, a={a:e}".format(b=b, a=a))
+        line_expfit, = main_ax.plot(xp, np.exp(pexp(xp)),
+                                    label=r'exponential regression $y = {b:.2f}e^{{{a:.2f}x}}$'.format(b=b, a=a))
+        # main_ax.legend(handles=[line_expfit])
+
+        return line_expfit
+
 
     elif fit_type == "linear":
         slope, intercept, r, p, std_err = stats.linregress(x, y)
         y_regression = [slope * n + intercept for n in x]
-        ax.plot(x, y_regression)
+
+        print("R2 value: ")
+        print(R2(x, y, [slope, intercept]))
+        print("for function y = a*x + b, a = {a}, b = {b}".format(a=slope, b=intercept))
+
+        line_regression, = main_ax.plot(x, y_regression,
+                                        label=r'linear regression $y = {a:.2f}x + {b:.2f}$'.format(a=slope,
+                                                                                                   b=intercept))
+        main_ax.legend(handles=[line_regression])
+
+        return line_regression
 
     elif fit_type == "poly":
-        p3 = np.poly1d(np.polyfit(x, y, order))
-        ax.plot(xp, p3(xp), pyplot_formatter)
+        poly_coef = np.polyfit(x, y, order)
+        p3 = np.poly1d(poly_coef)
+
+        print("R2 value: ")
+        print(R2(x, y, poly_coef))
+        print("for function y = ax^3 + bx^2 + cx + d, \n a = {a}, \n b = {b}, \n c = {c}, \n d = {d}".format(
+            a=poly_coef[3],
+            b=poly_coef[2],
+            c=poly_coef[1],
+            d=poly_coef[0]))
+
+        line_regression, = main_ax.plot(xp, p3(xp),
+                                        label=r'polynomial regression $y = {a:.2f}x^3 + {b:.2f}x^2 + {c:.2f}x + {d:.2f}$'.format(
+                                            a=poly_coef[3],
+                                            b=poly_coef[2],
+                                            c=poly_coef[1],
+                                            d=poly_coef[0]))
+        main_ax.legend(handles=[line_regression])
+
+        return line_regression
 
 def BudContours():
     directory = "images/edged_img/"
@@ -208,7 +274,7 @@ def BudContours():
         # banana_volume_list.append(total_area)
 
         buds_area_list.append(avg_area)
-  rect()
+    rect()
     # x = list(range(1, len(banana_volume_list) + 1))
     x = np.array([i.toordinal() for i in datetime_objects])
     y_dots = np.array(buds_area_list)
@@ -256,11 +322,11 @@ def BudContours():
 
     ax.scatter(x_date, y_dots_new)
 
-    draw_fitline(ax, x_date, y_dots_new, '-', 'poly')
+    draw_fitline(ax, x_date, y_dots_new, '-', 'exp')
 
     plt.savefig("scatter.png")
 
-    # plt.show()
+    plt.show()
 
 def filterData(x, y_dots):  # filter unsuitable data and replace with 0
     temp = 0
