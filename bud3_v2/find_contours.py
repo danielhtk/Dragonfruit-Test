@@ -208,7 +208,7 @@ def BudContours():
         # banana_volume_list.append(total_area)
 
         buds_area_list.append(avg_area)
-  rect()
+    rect()
     # x = list(range(1, len(banana_volume_list) + 1))
     x = np.array([i.toordinal() for i in datetime_objects])
     y_dots = np.array(buds_area_list)
@@ -260,13 +260,13 @@ def BudContours():
 
     plt.savefig("scatter.png")
 
-    # plt.show()
+    plt.show()
 
 def filterData(x, y_dots):  # filter unsuitable data and replace with 0
     temp = 0
     c = len(y_dots) - x  # left how much to go
     temp = x
-    i = 0;
+    i = 0
     while i < c:
         # if y_dots[temp-1] != 0 :
         #     ### filter element with 0
